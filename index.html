@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dividend Portfolio は、日本の個人投資家向けに保有銘柄、配当、株価更新、企業分析と候補銘柄を整理する意思決定支援アプリです。">
+  <title>Dividend Portfolio | 配当ポートフォリオの意思決定支援</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #142b32;
+      --muted: #52676d;
+      --paper: #f5f7f4;
+      --surface: #ffffff;
+      --line: #dce5e0;
+      --green: #176b57;
+      --green-dark: #105342;
+      --mint: #dff2e9;
+      --gold: #d5a94e;
+      --focus: #174ee5;
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); line-height: 1.75; }
+    a { color: var(--green-dark); text-underline-offset: .2em; }
+    a:hover { text-decoration-thickness: .14em; }
+    a:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; border-radius: 3px; }
+    .skip-link { position: absolute; top: .75rem; left: .75rem; z-index: 2; padding: .6rem .9rem; background: #fff; transform: translateY(-160%); }
+    .skip-link:focus { transform: translateY(0); }
+    .wrap { width: min(1080px, calc(100% - 2.5rem)); margin-inline: auto; }
+    .site-header { padding: 1.1rem 0; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.86); }
+    .header-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .brand { color: var(--ink); font-size: 1.1rem; font-weight: 750; letter-spacing: .015em; text-decoration: none; }
+    .nav { display: flex; flex-wrap: wrap; gap: 1rem 1.35rem; font-size: .93rem; }
+    .nav a { color: var(--muted); font-weight: 650; }
+    main { padding-bottom: 4.5rem; }
+    .hero { padding: clamp(3.2rem, 8vw, 6.8rem) 0 4rem; }
+    .hero-panel { position: relative; overflow: hidden; padding: clamp(2rem, 6vw, 4.7rem); border: 1px solid #cfe4d8; border-radius: 28px; background: linear-gradient(125deg, #e8f6ee 0%, #f7f4e8 100%); }
+    .hero-panel::after { content: ""; position: absolute; width: 20rem; height: 20rem; right: -7rem; bottom: -12rem; border: 1px solid rgba(23,107,87,.18); border-radius: 50%; box-shadow: 0 0 0 2rem rgba(23,107,87,.04), 0 0 0 4rem rgba(23,107,87,.035); pointer-events: none; }
+    .eyebrow { margin: 0 0 .8rem; color: var(--green-dark); font-size: .82rem; font-weight: 800; letter-spacing: .12em; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 740px; margin-bottom: 1.2rem; font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.28; letter-spacing: -.035em; }
+    .hero-copy { max-width: 670px; margin-bottom: 1.8rem; color: #354f54; font-size: clamp(1rem, 2vw, 1.2rem); }
+    .actions { display: flex; flex-wrap: wrap; gap: .8rem; position: relative; z-index: 1; }
+    .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; padding: .7rem 1.1rem; border: 1px solid var(--green); border-radius: 999px; color: #fff; background: var(--green); font-weight: 750; text-decoration: none; }
+    .button:hover { background: var(--green-dark); }
+    .button.secondary { color: var(--green-dark); background: rgba(255,255,255,.72); }
+    .button.secondary:hover { background: #fff; }
+    .section { padding: 2rem 0; }
+    .section-heading { max-width: 720px; margin-bottom: 1.5rem; }
+    .section-heading h2 { margin-bottom: .5rem; font-size: clamp(1.55rem, 3vw, 2.15rem); line-height: 1.35; }
+    .section-heading p { margin-bottom: 0; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .card { padding: 1.4rem; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+    .card-mark { display: grid; width: 2.5rem; height: 2.5rem; margin-bottom: 1rem; place-items: center; border-radius: 12px; color: var(--green-dark); background: var(--mint); font-weight: 850; }
+    .card h3 { margin-bottom: .45rem; font-size: 1.08rem; }
+    .card p { margin-bottom: 0; color: var(--muted); font-size: .95rem; }
+    .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; counter-reset: step; }
+    .flow-item { position: relative; padding: 1.25rem 1.25rem 1.35rem 3.7rem; border-top: 2px solid var(--gold); background: rgba(255,255,255,.62); counter-increment: step; }
+    .flow-item::before { content: "0" counter(step); position: absolute; top: 1.2rem; left: 1.15rem; color: var(--green); font-weight: 850; }
+    .flow-item h3 { margin-bottom: .35rem; font-size: 1rem; }
+    .flow-item p { margin-bottom: 0; color: var(--muted); font-size: .93rem; }
+    .note { padding: 1.35rem 1.5rem; border-left: 4px solid var(--green); border-radius: 0 14px 14px 0; background: #eaf3ed; }
+    .note p:last-child { margin-bottom: 0; }
+    .page-note { margin-top: 1rem; color: var(--muted); font-size: .94rem; }
+    .site-footer { padding: 1.8rem 0 2.4rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+    .footer-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .8rem 1.5rem; }
+    .footer-row p { margin: 0; }
+    @media (max-width: 720px) {
+      .wrap { width: min(100% - 1.5rem, 600px); }
+      .header-row { align-items: flex-start; flex-direction: column; }
+      .nav { gap: .55rem 1rem; }
+      .hero { padding-top: 1.35rem; }
+      .hero-panel { border-radius: 20px; }
+      .grid, .flow { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="index.html" aria-label="Dividend Portfolio ホーム">Dividend Portfolio</a>
+      <nav class="nav" aria-label="サイト内ナビゲーション">
+        <a href="#overview">アプリについて</a>
+        <a href="privacy.html">プライバシー</a>
+        <a href="https://github.com/kintyo578/kintyo578.github.io/issues" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-panel">
+        <p class="eyebrow">配当投資のための意思決定支援</p>
+        <h1 id="hero-title">配当ポートフォリオを、落ち着いて見渡す。</h1>
+        <p class="hero-copy">Dividend Portfolio は、日本の個人投資家が保有銘柄や配当、株価、企業分析、候補銘柄を整理し、投資判断の材料を確認するためのアプリです。</p>
+        <div class="actions">
+          <a class="button" href="#overview">アプリの概要を見る</a>
+          <a class="button secondary" href="privacy.html">データの取り扱い</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="overview" class="section" aria-labelledby="overview-title">
+      <div class="section-heading">
+        <h2 id="overview-title">保有状況から、次の判断材料まで</h2>
+        <p>日々の管理に必要な情報をまとめ、ポートフォリオの検討を支援します。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="card-mark" aria-hidden="true">01</div>
+          <h3>保有銘柄と配当</h3>
+          <p>保有状況と配当に関する記録をまとめ、ポートフォリオの状態を確認できます。</p>
+        </article>
+        <article class="card">
+          <div class="card-mark" aria-hidden="true">02</div>
+          <h3>株価の更新</h3>
+          <p>株価更新では Google Apps Script が外部の価格データを取得し、アプリへ反映するための情報を受け渡します。</p>
+        </article>
+        <article class="card">
+          <div class="card-mark" aria-hidden="true">03</div>
+          <h3>企業分析と候補銘柄</h3>
+          <p>企業分析の内容や検討中の候補銘柄を整理し、見返せるようにします。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="flow-title">
+      <div class="section-heading">
+        <h2 id="flow-title">情報の受け渡し</h2>
+        <p>アプリの記録、Google Sheets、利用者が必要に応じて行う分析を組み合わせます。</p>
+      </div>
+      <div class="flow">
+        <article class="flow-item">
+          <h3>アプリで記録を管理</h3>
+          <p>保有情報、配当、株価、企業分析、候補銘柄に関するデータは Cloudflare Worker と D1 で処理・保存します。</p>
+        </article>
+        <article class="flow-item">
+          <h3>Google Sheets と連携</h3>
+          <p>設定済みのスプレッドシートを、株価データや分析依頼・結果などの受け渡しに使用します。</p>
+        </article>
+        <article class="flow-item">
+          <h3>分析は利用者が開始</h3>
+          <p>ChatGPT による分析を使う場合は、利用者が Sheets を介して明示的に依頼と結果の受け渡しを行います。アプリが ChatGPT を自動で呼び出すことはありません。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="data-title">
+      <div class="section-heading">
+        <h2 id="data-title">データをどのように扱うか</h2>
+      </div>
+      <div class="note">
+        <p>Google OAuth では、Google アカウント内のスプレッドシート全般を読み書きできる広い権限が求められます。Dividend Portfolio は、設定済みのスプレッドシートをアプリ機能のために利用します。</p>
+        <p>データはアプリ運用のため Cloudflare と Google のサービスで処理されます。情報を販売したり、広告目的で利用したりしません。詳しくは<a href="privacy.html">プライバシーポリシー</a>をご確認ください。</p>
+      </div>
+      <p class="page-note">この公開ページはサービス概要を案内する情報ページです。ここでは保有データを表示せず、サインインやデモを提供しません。</p>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap footer-row">
+      <p><strong>Dividend Portfolio</strong> <span>・ 最終更新日: 2026年11月11日</span></p>
+      <p><a href="privacy.html">プライバシーポリシー</a></p>
+    </div>
+  </footer>
+</body>
+</html>
